@@ -131,6 +131,16 @@ module.exports = grammar(add_inline_rules({
             alias($._latex_span_close, $.latex_span_delimiter),
         ),
 
+        _todotag_open: $ => prec(100, seq('@', '{')),
+        _todotag_close: $ => '}',
+
+        todotag: $ => seq(
+            $._todotag_open,
+            repeat1($._word_no_digit),
+            ':', repeat1(choice($._word, common.punctuation_without($, ['}', '@']), $._whitespace)),
+            $._todotag_close
+        ),
+
         // Different kinds of links:
         // * inline links (https://github.github.com/gfm/#inline-link)
         // * full reference links (https://github.github.com/gfm/#full-reference-link)
@@ -351,6 +361,7 @@ module.exports = grammar(add_inline_rules({
             $._soft_line_break,
             $.backslash_escape,
             $.hard_line_break,
+            $.todotag,
             $.uri_autolink,
             $.email_autolink,
             $.entity_reference,
